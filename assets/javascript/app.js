@@ -14,6 +14,7 @@ var config = {
 
   database.ref().on("value", function(snapshot) {
   var obje = snapshot.val();
+  train =0;
   $("#divHolder").empty();
   console.log(obje);
   for (i=0; i<Object.keys(obje).length;i++){
@@ -36,24 +37,17 @@ var config = {
 });
 
 var update = function () {
-  var ref = database.ref()
+  console.log("update?");
+  var ref = database.ref();
   ref.once("value").then(function (snapshot){
     var object = snapshot.val();
     for (i=0; i<Object.keys(object).length; i++){
-      console.log(Object.keys(object).length);
       var index = ("train" + i);
-      console.log(index);
       var data = object[index];
-      console.log(data);
       var now = moment().format("hh:mm a");
-      console.log(now);
       var differ= moment(now,"hh:mm a").diff(moment(data.firstTrain, "hh:mm a"), "m");
-      console.log(differ);
       var minAway = data.frequency - (differ % data.frequency);
-      console.log(minAway);
       var nextArrival = moment(now, "hh:mm a").add(minAway, "m").format("hh:mm a");
-      console.log(nextArrival);
-      console.log("---------------------");
       database.ref("/train"+ i).update({
         next: nextArrival,
         minAway: minAway
